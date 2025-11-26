@@ -1,0 +1,96 @@
+[gd_scene load_steps=10 format=3 uid="uid://vcpd574mqk1y"]
+
+[ext_resource type="FontFile" uid="uid://d0ddtw01cq85u" path="res://assets/fonts/Legrand-Regular.ttf" id="1_1g8jr"]
+[ext_resource type="FontFile" uid="uid://bi2wgccs8bdpr" path="res://assets/fonts/AlegreyaSC-Regular.ttf" id="2_m1kxf"]
+[ext_resource type="Texture2D" uid="uid://d1xowbb00ae7x" path="res://assets/backgrounds/menu/Dark_Forest.jpg" id="3_x2yvf"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_1g8jr"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1g8jr"]
+bg_color = Color(0.8389003, 0.8388958, 0.8388969, 1)
+border_color = Color(0.8, 0.8, 0.8, 0.039215688)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_m1kxf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m1kxf"]
+bg_color = Color(0.8392157, 0.8392157, 0.8392157, 1)
+border_color = Color(0.8, 0.8, 0.8, 0.105882354)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_x2yvf"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x2yvf"]
+bg_color = Color(0.8392157, 0.8392157, 0.8392157, 1)
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 3
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_x2yvf")
+stretch_mode = 6
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 2
+size_flags_stretch_ratio = 8.91
+theme_override_constants/separation = 8
+
+[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_1g8jr")
+theme_override_font_sizes/font_size = 75
+text = "Luz  del  Uku Pacha"
+
+[node name="Control" type="Control" parent="CenterContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 80)
+layout_mode = 2
+
+[node name="btnIniciar" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_hover_color = Color(0.056291483, 0.05629161, 0.05629182, 1)
+theme_override_fonts/font = ExtResource("2_m1kxf")
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxEmpty_1g8jr")
+theme_override_styles/hover = SubResource("StyleBoxFlat_1g8jr")
+text = "Jugar
+"
+
+[node name="btnControles" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_hover_color = Color(0.03839711, 0.038397152, 0.03839736, 1)
+theme_override_fonts/font = ExtResource("2_m1kxf")
+theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxEmpty_m1kxf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_m1kxf")
+text = "Controles"
+
+[node name="btnSalir" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_hover_color = Color(0.025363777, 0.025363786, 0.025363918, 1)
+theme_override_fonts/font = ExtResource("2_m1kxf")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxEmpty_x2yvf")
+theme_override_styles/hover = SubResource("StyleBoxFlat_x2yvf")
+text = "Salir
+"

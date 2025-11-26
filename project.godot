@@ -11,5 +11,6 @@ config_version=5
 [application]
 
 config/name="videogameGodot"
+run/main_scene="uid://vcpd574mqk1y"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
