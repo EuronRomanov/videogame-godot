@@ -1,6 +1,7 @@
-[gd_scene load_steps=10 format=3 uid="uid://vcpd574mqk1y"]
+[gd_scene load_steps=11 format=3 uid="uid://vcpd574mqk1y"]
 
 [ext_resource type="FontFile" uid="uid://d0ddtw01cq85u" path="res://assets/fonts/Legrand-Regular.ttf" id="1_1g8jr"]
+[ext_resource type="Script" uid="uid://c6ovowg1tq7vv" path="res://scripts/mainMenu/main_menu.gd" id="1_m1kxf"]
 [ext_resource type="FontFile" uid="uid://bi2wgccs8bdpr" path="res://assets/fonts/AlegreyaSC-Regular.ttf" id="2_m1kxf"]
 [ext_resource type="Texture2D" uid="uid://d1xowbb00ae7x" path="res://assets/backgrounds/menu/Dark_Forest.jpg" id="3_x2yvf"]
 
@@ -29,6 +30,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_vertical = 3
+script = ExtResource("1_m1kxf")
 
 [node name="TextureRect" type="TextureRect" parent="."]
 layout_mode = 1
@@ -94,3 +96,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_x2yvf")
 theme_override_styles/hover = SubResource("StyleBoxFlat_x2yvf")
 text = "Salir
 "
+
+[connection signal="pressed" from="CenterContainer/VBoxContainer/btnIniciar" to="." method="_on_btn_iniciar_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/btnControles" to="." method="_on_btn_controles_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/btnSalir" to="." method="_on_btn_salir_pressed"]
