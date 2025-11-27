@@ -33,4 +33,4 @@ func _on_video_finished() -> void:
 	go_to_game() # Replace with function body.
 
 func go_to_game() -> void:
-	get_tree().change_scene_to_file("res://scenes/levels/Level1.tscn")
+	get_tree().change_scene_to_file("res://scenes/levels/level_1.tscn")
