@@ -1,6 +1,5 @@
 extends CharacterBody2D
 
-
 @export_category("Movement Settings")
 @export var run_speed: float = 300.0
 @export var jump_velocity: float = -400.0
@@ -16,33 +15,25 @@ enum PlayerState {
 
 var current_state: PlayerState = PlayerState.IDLE
 var last_direction: int = 1  
-var is_attacking: bool = false
 
 @onready var animated_sprite = $AnimatedSprite2D
 
 func _ready():
-	if animated_sprite.has_signal("animation_finished"):
-		animated_sprite.animation_finished.connect(_on_animation_finished)
+	# ✅ Solo inicialización, sin conectar señales
 	change_state(PlayerState.IDLE)
 
-
 func _physics_process(delta: float) -> void:
-	# Add the gravity.
+	# Gravedad
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
-	# Handle jump.
+	# Input (excepto durante ataque)
 	if current_state != PlayerState.ATTACKING:
 		handle_input()
 		
 	move_and_slide()
 	update_state_based_on_physics()
 	update_animation()
-
-	
-
-	move_and_slide()
-
 
 func update_state_based_on_physics():
 	if current_state == PlayerState.ATTACKING:
@@ -55,11 +46,13 @@ func update_state_based_on_physics():
 			change_state(PlayerState.FALLING)
 	else:
 		if current_state in [PlayerState.JUMPING, PlayerState.FALLING]:
+			# Aterrizó
 			if abs(velocity.x) > 0:
 				change_state(PlayerState.RUNNING)
 			else:
 				change_state(PlayerState.IDLE)
 		elif current_state in [PlayerState.IDLE, PlayerState.RUNNING]:
+			# En suelo
 			if abs(velocity.x) > 0:
 				change_state(PlayerState.RUNNING)
 			else:
@@ -110,8 +103,19 @@ func update_animation():
 func change_state(new_state: PlayerState):
 	if current_state == new_state:
 		return
+	
 	current_state = new_state
 
+func state_to_string(state: PlayerState) -> String:
+	match state:
+		PlayerState.IDLE: return "IDLE"
+		PlayerState.RUNNING: return "RUNNING"
+		PlayerState.JUMPING: return "JUMPING"
+		PlayerState.FALLING: return "FALLING"
+		PlayerState.ATTACKING: return "ATTACKING"
+		_: return "UNKNOWN"
+
+# ✅ NOMBRE CORREGIDO - igual al que conectaste visualmente
 func _on_animation_finished() -> void:
 	if current_state == PlayerState.ATTACKING:
 		if is_on_floor():
