@@ -1,9 +1,8 @@
 extends CharacterBody2D
 
-@export_category("Movement Settings")
-@export var run_speed: float = 300.0
-@export var jump_velocity: float = -400.0
-@export var gravity: float = 980.0
+@export var run_speed := 300.0
+@export var jump_velocity := -400.0
+@export var gravity := 980.0
 
 enum PlayerState {
 	IDLE,
@@ -14,117 +13,107 @@ enum PlayerState {
 }
 
 var current_state: PlayerState = PlayerState.IDLE
-var last_direction: int = 1  
+var last_direction := 1
+var input_dir := 0.0
+var current_anim := ""
 
-@onready var animated_sprite = $AnimatedSprite2D
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
+
 
 func _ready():
-	# ✅ Solo inicialización, sin conectar señales
-	change_state(PlayerState.IDLE)
+	set_state(PlayerState.IDLE)
 
-func _physics_process(delta: float) -> void:
-	# Gravedad
+
+func _physics_process(delta):
 	if not is_on_floor():
 		velocity.y += gravity * delta
 
-	# Input (excepto durante ataque)
-	if current_state != PlayerState.ATTACKING:
-		handle_input()
-		
-	move_and_slide()
-	update_state_based_on_physics()
-	update_animation()
-
-func update_state_based_on_physics():
 	if current_state == PlayerState.ATTACKING:
+		move_and_slide()
 		return
-		
+
+	handle_input()
+	update_state_based_on_physics()
+	move_and_slide()
+
+
+# =====================
+# INPUT
+# =====================
+func handle_input():
+	input_dir = Input.get_axis("move_left", "move_right")
+
+	if input_dir != 0:
+		last_direction = 1 if input_dir > 0 else -1
+
+	velocity.x = input_dir * run_speed
+
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = jump_velocity
+		set_state(PlayerState.JUMPING)
+
+	if Input.is_action_just_pressed("attack") and is_on_floor():
+		velocity.x = 0
+		set_state(PlayerState.ATTACKING)
+
+
+# =====================
+# FSM
+# =====================
+func update_state_based_on_physics():
 	if not is_on_floor():
 		if velocity.y < 0:
-			change_state(PlayerState.JUMPING)
+			set_state(PlayerState.JUMPING)
 		else:
-			change_state(PlayerState.FALLING)
+			set_state(PlayerState.FALLING)
 	else:
-		if current_state in [PlayerState.JUMPING, PlayerState.FALLING]:
-			# Aterrizó
-			if abs(velocity.x) > 0:
-				change_state(PlayerState.RUNNING)
-			else:
-				change_state(PlayerState.IDLE)
-		elif current_state in [PlayerState.IDLE, PlayerState.RUNNING]:
-			# En suelo
-			if abs(velocity.x) > 0:
-				change_state(PlayerState.RUNNING)
-			else:
-				change_state(PlayerState.IDLE)
+		if input_dir != 0:
+			set_state(PlayerState.RUNNING)
+		else:
+			set_state(PlayerState.IDLE)
 
-func handle_input():
-	var horizontal_input = 0
-	
-	if Input.is_action_pressed("move_right"):
-		horizontal_input += 1
-		last_direction = 1
-		
-	if Input.is_action_pressed("move_left"):
-		horizontal_input -= 1
-		last_direction = -1
-		
-	velocity.x = horizontal_input * run_speed
-	
-	if Input.is_action_just_pressed("jump") and is_on_floor() and current_state != PlayerState.ATTACKING:
-		velocity.y = jump_velocity
-		change_state(PlayerState.JUMPING)
-		
-	if Input.is_action_just_pressed("stop"):
-		velocity.x = 0
-		if is_on_floor() and current_state != PlayerState.ATTACKING:
-			change_state(PlayerState.IDLE)
-			
-	if Input.is_action_just_pressed("attack") and is_on_floor() and current_state != PlayerState.ATTACKING:
-		change_state(PlayerState.ATTACKING)
-		velocity.x = 0
 
-func update_animation():
-	match current_state:
-		PlayerState.ATTACKING:
-			animated_sprite.play("attack")
-		PlayerState.JUMPING:
-			animated_sprite.play("jump")
-		PlayerState.FALLING:
-			animated_sprite.play("jump")
-		PlayerState.RUNNING:
-			if last_direction == 1:
-				animated_sprite.play("run_right")
-			else:
-				animated_sprite.play("run_left")
-		PlayerState.IDLE:
-			animated_sprite.play("idle")
-
-func change_state(new_state: PlayerState):
+func set_state(new_state: PlayerState):
 	if current_state == new_state:
 		return
-	
+
 	current_state = new_state
 
-func state_to_string(state: PlayerState) -> String:
-	match state:
-		PlayerState.IDLE: return "IDLE"
-		PlayerState.RUNNING: return "RUNNING"
-		PlayerState.JUMPING: return "JUMPING"
-		PlayerState.FALLING: return "FALLING"
-		PlayerState.ATTACKING: return "ATTACKING"
-		_: return "UNKNOWN"
+	match current_state:
+		PlayerState.IDLE:
+			play_anim("idle")
 
-# ✅ NOMBRE CORREGIDO - igual al que conectaste visualmente
-func _on_animation_finished() -> void:
-	if current_state == PlayerState.ATTACKING:
-		if is_on_floor():
-			if abs(velocity.x) > 0:
-				change_state(PlayerState.RUNNING)
-			else:
-				change_state(PlayerState.IDLE)
-		else:
-			if velocity.y < 0:
-				change_state(PlayerState.JUMPING)
-			else:
-				change_state(PlayerState.FALLING)
+		PlayerState.RUNNING:
+			play_anim("run_right" if last_direction == 1 else "run_left")
+
+		PlayerState.JUMPING, PlayerState.FALLING:
+			play_anim("jump")
+
+		PlayerState.ATTACKING:
+			play_anim("attack")
+
+
+# =====================
+# ANIMACIONES
+# =====================
+func play_anim(anim_name: String):
+	if current_anim == anim_name:
+		return
+
+	current_anim = anim_name
+	animated_sprite.play(anim_name)
+
+
+# =====================
+# SEÑAL FIN DE ANIMACIÓN
+# =====================
+func _on_animated_sprite_2d_animation_finished() -> void:
+	if current_state != PlayerState.ATTACKING:
+		return
+
+	if not is_on_floor():
+		set_state(PlayerState.FALLING)
+	elif input_dir != 0:
+		set_state(PlayerState.RUNNING)
+	else:
+		set_state(PlayerState.IDLE)
